@@ -1,5 +1,7 @@
 package ch.supsi.imdbrating.film;
 
+import java.util.Arrays;
+
 public class Film {
     private String posterLink;
     private String title;
@@ -12,10 +14,10 @@ public class Film {
     private int metaScore;
     private String director;
     private String[] star;
-    private String numberOfVotes;
+    private long numberOfVotes;
     private String gross;
 
-    public Film(String posterLink, String title, int releaseYear, String certificate, int duration, String[] genres, float imdbRating, String overview, int metaScore, String director, String[] star, String numberOfVotes, String gross) {
+    public Film(String posterLink, String title, int releaseYear, String certificate, int duration, String[] genres, float imdbRating, String overview, int metaScore, String director, String[] star, long numberOfVotes, String gross) {
         this.posterLink = posterLink;
         this.title = title;
         this.releaseYear = releaseYear;
@@ -75,11 +77,30 @@ public class Film {
         return star;
     }
 
-    public String getNumberOfVotes() {
+    public long getNumberOfVotes() {
         return numberOfVotes;
     }
 
     public String getGross() {
         return gross;
+    }
+
+    @Override
+    public String toString() {
+        return "Film{" +
+                "posterLink='" + posterLink + '\'' +
+                ", title='" + title + '\'' +
+                ", releaseYear=" + releaseYear +
+                ", certificate='" + certificate + '\'' +
+                ", duration=" + duration +
+                ", genres=" + Arrays.toString(genres) +
+                ", imdbRating=" + imdbRating +
+                ", overview='" + overview + '\'' +
+                ", metaScore=" + metaScore +
+                ", director='" + director + '\'' +
+                ", star=" + Arrays.toString(star) +
+                ", numberOfVotes=" + numberOfVotes +
+                ", gross='" + gross + '\'' +
+                '}';
     }
 }
