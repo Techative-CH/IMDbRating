@@ -3,14 +3,42 @@ package ch.supsi.imdbrating.film;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
-    public abstract class FilmStatistics {
+public abstract class FilmStatistics {
     private static List<Film> films = new ArrayList<>();
 
-    private static void writeFile(String output){
-        //...
+    private static void writeFile(String output) {
+        int numberOfFilms = films.size();
+
+        System.out.println("Total number of movies: " + numberOfFilms);
+
+        Double avgMovieRuntime = films.stream().mapToInt(Film::getDuration).average().orElse(0);
+
+        System.out.println("Average movies run-time: " + avgMovieRuntime);
+
+        String bestDirector = films.stream()
+                .collect(Collectors.groupingBy(
+                        Film::getDirector,
+                        Collectors.averagingDouble(Film::getImdbRating)
+                ))
+                .entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse("Nessun direttore");
+
+        System.out.println("Best director: " + bestDirector);
+
+        String actorPresence = films.stream()
+                .flatMap(film -> Arrays.stream(film.getStar()))
+                .collect(Collectors.groupingBy(actor -> actor, Collectors.counting()))
+                .entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse("Attore non trovato");
+
+        System.out.println("Most present actor/actress: " + actorPresence);
     }
 
     private static void readFile(String input) throws IOException{
