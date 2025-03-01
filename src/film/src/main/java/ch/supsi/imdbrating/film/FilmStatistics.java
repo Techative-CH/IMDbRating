@@ -14,7 +14,10 @@ public abstract class FilmStatistics {
 
         System.out.println("Total number of movies: " + numberOfFilms);
 
-        Double avgMovieRuntime = films.stream().mapToInt(Film::getDuration).average().orElse(0);
+        double avgMovieRuntime = films.stream()
+                .mapToInt(Film::getDuration)
+                .average()
+                .orElse(0);
 
         System.out.println("Average movies run-time: " + avgMovieRuntime);
 
@@ -30,15 +33,30 @@ public abstract class FilmStatistics {
 
         System.out.println("Best director: " + bestDirector);
 
-        String actorPresence = films.stream()
+        String mostPresentActor = films.stream()
                 .flatMap(film -> Arrays.stream(film.getStar()))
-                .collect(Collectors.groupingBy(actor -> actor, Collectors.counting()))
+                .collect(Collectors.groupingBy(
+                        actor -> actor,
+                        Collectors.counting()
+                ))
                 .entrySet().stream()
                 .max(Map.Entry.comparingByValue())
                 .map(Map.Entry::getKey)
                 .orElse("Attore non trovato");
 
-        System.out.println("Most present actor/actress: " + actorPresence);
+        System.out.println("Most present actor/actress: " + mostPresentActor);
+
+        int mostProductiveYear = films.stream()
+                .collect(Collectors.groupingBy(
+                        Film::getReleaseYear,
+                        Collectors.counting()
+                ))
+                .entrySet().stream()
+                .max(Map.Entry.comparingByValue())
+                .map(Map.Entry::getKey)
+                .orElse(-1);
+
+        System.out.println("Most productive year: " + mostProductiveYear);
     }
 
     private static void readFile(String input) throws IOException{
