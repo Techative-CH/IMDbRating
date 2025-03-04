@@ -1,8 +1,13 @@
 package ch.supsi.imdbrating.film;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -63,10 +68,14 @@ public abstract class FilmStatistics {
         return stats;
     }
 
-    private static void writeFile(String output, Map<String, Object> stats) {
+    private static void writeFile(String output, Map<String, Object> stats) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        File f = new File(output);
         stats.forEach((key, value) -> {
-            System.out.println(key + "=" + value);
+            sb.append(key).append(" = ").append(value).append('\n');
+            //System.out.println(key + "=" + value);
         });
+        Files.writeString(Paths.get(f.toURI()), sb.toString(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
     }
 
     private static void readFile(String input) throws IOException{
