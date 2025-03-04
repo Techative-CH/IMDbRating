@@ -9,17 +9,19 @@ import java.util.stream.Collectors;
 public abstract class FilmStatistics {
     private static List<Film> films = new ArrayList<>();
 
-    private static void writeFile(String output) {
+    private static Map<String, Object> readStatistics() {
+        Map<String, Object> stats = new HashMap<>();
+
         int numberOfFilms = films.size();
 
-        System.out.println("Total number of movies: " + numberOfFilms);
+        stats.put("TotalNumberOfFilms", numberOfFilms);
 
         double avgMovieRuntime = films.stream()
                 .mapToInt(Film::getDuration)
                 .average()
                 .orElse(0);
 
-        System.out.println("Average movies run-time: " + avgMovieRuntime);
+        stats.put("AverageMovieRuntime", avgMovieRuntime);
 
         String bestDirector = films.stream()
                 .collect(Collectors.groupingBy(
@@ -31,7 +33,7 @@ public abstract class FilmStatistics {
                 .map(Map.Entry::getKey)
                 .orElse("Nessun direttore");
 
-        System.out.println("Best director: " + bestDirector);
+        stats.put("BestDirector", bestDirector);
 
         String mostPresentActor = films.stream()
                 .flatMap(film -> Arrays.stream(film.getStar()))
@@ -44,7 +46,7 @@ public abstract class FilmStatistics {
                 .map(Map.Entry::getKey)
                 .orElse("Attore non trovato");
 
-        System.out.println("Most present actor/actress: " + mostPresentActor);
+        stats.put("MostPresentActor", mostPresentActor);
 
         int mostProductiveYear = films.stream()
                 .collect(Collectors.groupingBy(
@@ -56,7 +58,15 @@ public abstract class FilmStatistics {
                 .map(Map.Entry::getKey)
                 .orElse(-1);
 
-        System.out.println("Most productive year: " + mostProductiveYear);
+        stats.put("MostProductiveYear", mostProductiveYear);
+
+        return stats;
+    }
+
+    private static void writeFile(String output, Map<String, Object> stats) {
+        stats.forEach((key, value) -> {
+            System.out.println(key + "=" + value);
+        });
     }
 
     private static void readFile(String input) throws IOException{
@@ -94,7 +104,6 @@ public abstract class FilmStatistics {
                 System.out.println(films.get(films.size()-1));
             }
         }
-        //films.forEach(System.out::println);
     }
 
     private static List<String> readCSV(String line){
@@ -119,7 +128,8 @@ public abstract class FilmStatistics {
     public static void run(String input, String output) {
         try {
             readFile(input);
-            writeFile(output);
+            Map<String, Object> stats = readStatistics();
+            writeFile(output, stats);
         } catch (IOException ioe) {
             System.err.println(ioe.getMessage());
         }
