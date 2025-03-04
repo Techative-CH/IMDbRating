@@ -68,13 +68,23 @@ public abstract class FilmStatistics {
         return stats;
     }
 
+    private static boolean createFolderIfNotExists(File file) {
+        return file.exists() || file.mkdirs();
+    }
+
     private static void writeFile(String output, Map<String, Object> stats) throws IOException {
         StringBuilder sb = new StringBuilder();
         File f = new File(output);
+        File parentFolder = f.getParentFile();
+
+        if (!createFolderIfNotExists(parentFolder)) {
+            throw new IOException("Film statistics folders cannot be created");
+        }
+
         stats.forEach((key, value) -> {
-            sb.append(key).append(" = ").append(value).append('\n');
-            //System.out.println(key + "=" + value);
+            sb.append(key).append("=").append(value).append('\n');
         });
+
         Files.writeString(Paths.get(f.toURI()), sb.toString(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
     }
 
