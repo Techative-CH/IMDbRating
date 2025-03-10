@@ -90,14 +90,16 @@ public abstract class FilmStatistics {
 
     private static void readFile(String input) throws IOException{
         boolean isFirstLine = true;
+
         try(BufferedReader br = new BufferedReader(new FileReader(input))){
             String line;
+
             while((line = br.readLine()) != null) {
-                System.out.println(line);
                 if(isFirstLine) {
                     isFirstLine = false;
                     continue;
                 }
+
                 List<String> columns = readCSV(line);
 
                 films.add(new Film(
@@ -120,7 +122,6 @@ public abstract class FilmStatistics {
                         columns.get(14).isBlank() ? 0 : Long.parseLong(columns.get(14)),
                         columns.get(15)
                 ));
-                System.out.println(films.get(films.size()-1));
             }
         }
     }
@@ -140,7 +141,9 @@ public abstract class FilmStatistics {
                 sb.append(c);
             }
         }
+
         result.add(sb.toString().trim());
+
         return result;
     }
 
