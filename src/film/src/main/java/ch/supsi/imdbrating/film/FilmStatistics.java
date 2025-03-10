@@ -72,6 +72,31 @@ public abstract class FilmStatistics {
         return file.exists() || file.mkdirs();
     }
 
+    private static void createPropertiesFileIfNotExists() throws IOException {
+        String home = System.getProperty("user.home");
+        String fullPath = Paths.get(home,".imdbrating", "imdbrating.properties").toString();
+        File f = new File(fullPath);
+
+        if (!f.exists()) {
+            File parentFolder = f.getParentFile();
+
+            if (createFolderIfNotExists(parentFolder)) {
+                String content = "input=/path/to/source.csv\noutput=/path/to/destination.txt";
+
+                Files.writeString(
+                        Paths.get(f.toURI()),
+                        content,
+                        StandardOpenOption.CREATE,
+                        StandardOpenOption.TRUNCATE_EXISTING
+                );
+            } else {
+                throw new IOException("Couldn't create folder " + parentFolder);
+            }
+        }
+
+        System.out.println(fullPath);
+    }
+
     private static void writeFile(String output, Map<String, Object> stats) throws IOException {
         StringBuilder sb = new StringBuilder();
         File f = new File(output);
@@ -157,6 +182,7 @@ public abstract class FilmStatistics {
 
     public static void run(String input, String output) {
         try {
+            createPropertiesFileIfNotExists();
             readFile(input);
             Map<String, Object> stats = readStatistics();
             writeFile(output, stats);
