@@ -77,6 +77,10 @@ public abstract class FilmStatistics {
         File f = new File(output);
         File parentFolder = f.getParentFile();
 
+        if (!f.isFile()) {
+            throw new IOException("The destination path is not a file");
+        }
+
         if (!createFolderIfNotExists(parentFolder)) {
             throw new IOException("Film statistics folders cannot be created");
         }
@@ -91,11 +95,15 @@ public abstract class FilmStatistics {
     private static void readFile(String input) throws IOException{
         boolean isFirstLine = true;
 
-        try(BufferedReader br = new BufferedReader(new FileReader(input))){
+        if (!new File(input).isFile()) {
+            throw new IOException("The source path is not a file");
+        }
+
+        try (BufferedReader br = new BufferedReader(new FileReader(input))) {
             String line;
 
-            while((line = br.readLine()) != null) {
-                if(isFirstLine) {
+            while ((line = br.readLine()) != null) {
+                if (isFirstLine) {
                     isFirstLine = false;
                     continue;
                 }
