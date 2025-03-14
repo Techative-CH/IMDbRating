@@ -12,6 +12,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class FilmStatistics {
+    public static final String ANSI_YELLOW = "\u001B[33m";
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_GREEN = "\u001B[32m";
     private static List<Film> films = new ArrayList<>();
 
     private static Map<String, Object> readStatistics() {
@@ -89,12 +92,13 @@ public abstract class FilmStatistics {
                         StandardOpenOption.CREATE,
                         StandardOpenOption.TRUNCATE_EXISTING
                 );
+
+                System.out.println(ANSI_GREEN + "Created properties file at: " + f.getAbsolutePath() + ANSI_RESET);
+                System.out.println(ANSI_YELLOW + "Remember to change input and output path in properties file!" + ANSI_RESET);
             } else {
-                throw new IOException("Couldn't create folder " + parentFolder);
+                throw new IOException("Couldn't create properties file " + parentFolder);
             }
         }
-
-        System.out.println(fullPath);
     }
 
     private static String[] getProperties() throws IOException {
@@ -111,7 +115,7 @@ public abstract class FilmStatistics {
         }
 
         if (list.size() != 2) {
-            throw new IOException("Invalid property file format " + fullPath);
+            throw new IOException("Invalid properties file format " + fullPath);
         }
 
         String input = "";
@@ -122,7 +126,7 @@ public abstract class FilmStatistics {
             String[] split = line.split("=");
 
             if (split.length != 2) {
-                throw new IOException("Invalid property file format " + fullPath);
+                throw new IOException("Invalid properties file format " + fullPath);
             }
 
             String key = split[0].trim();
@@ -142,8 +146,8 @@ public abstract class FilmStatistics {
         File f = new File(output);
         File parentFolder = f.getParentFile();
 
-        if (!f.isFile()) {
-            throw new IOException("The destination path is not a file");
+        if (f.isFile()) {
+            System.out.println(ANSI_YELLOW + "Output file will be overwritten: " + f.getAbsolutePath() + ANSI_RESET);
         }
 
         if (!createFolderIfNotExists(parentFolder)) {
@@ -155,12 +159,12 @@ public abstract class FilmStatistics {
         });
 
         Files.writeString(Paths.get(f.toURI()), sb.toString(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+
+        System.out.println(ANSI_GREEN + "Film statistics written to " + f.getAbsolutePath() + ANSI_RESET);
     }
 
     private static void readFile(String input) throws IOException{
         boolean isFirstLine = true;
-
-        System.out.println(input);
 
         if (!new File(input).isFile()) {
             throw new IOException("The source path is not a file");
@@ -199,6 +203,8 @@ public abstract class FilmStatistics {
                 ));
             }
         }
+
+        System.out.println(ANSI_GREEN + "Rode films from input file: " + input + ANSI_RESET);
     }
 
     private static List<String> readCSV(String line){
