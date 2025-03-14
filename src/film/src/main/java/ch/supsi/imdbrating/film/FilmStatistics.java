@@ -97,6 +97,46 @@ public abstract class FilmStatistics {
         System.out.println(fullPath);
     }
 
+    private static String[] getProperties() throws IOException {
+        String home = System.getProperty("user.home");
+        String fullPath = Paths.get(home,".imdbrating", "imdbrating.properties").toString();
+        List<String> list = new ArrayList<>();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(fullPath))) {
+            String line;
+
+            while ((line = br.readLine()) != null) {
+                list.add(line);
+            }
+        }
+
+        if (list.size() != 2) {
+            throw new IOException("Invalid property file format " + fullPath);
+        }
+
+        String input = "";
+        String output = "";
+
+        for (int i = 0; i < list.size(); i++) {
+            String line = list.get(i);
+            String[] split = line.split("=");
+
+            if (split.length != 2) {
+                throw new IOException("Invalid property file format " + fullPath);
+            }
+
+            String key = split[0].trim();
+
+            if (key.equals("input")) {
+                input = split[1].trim();
+            } else if (key.equals("output")) {
+                output = split[1].trim();
+            }
+        }
+
+        return new String[] { input, output };
+    }
+
     private static void writeFile(String output, Map<String, Object> stats) throws IOException {
         StringBuilder sb = new StringBuilder();
         File f = new File(output);
@@ -119,6 +159,8 @@ public abstract class FilmStatistics {
 
     private static void readFile(String input) throws IOException{
         boolean isFirstLine = true;
+
+        System.out.println(input);
 
         if (!new File(input).isFile()) {
             throw new IOException("The source path is not a file");
@@ -180,11 +222,18 @@ public abstract class FilmStatistics {
         return result;
     }
 
-    public static void run(String input, String output) {
+    public static void run() {
         try {
             createPropertiesFileIfNotExists();
+
+            String[] properties = getProperties();
+            String input = properties[0];
+            String output = properties[1];
+
             readFile(input);
+
             Map<String, Object> stats = readStatistics();
+
             writeFile(output, stats);
         } catch (IOException ioe) {
             System.err.println(ioe.getMessage());
