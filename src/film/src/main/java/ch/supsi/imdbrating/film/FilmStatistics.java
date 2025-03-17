@@ -204,7 +204,7 @@ public abstract class FilmStatistics {
             }
         }
 
-        System.out.println(ANSI_GREEN + "Rode films from input file: " + input + ANSI_RESET);
+        System.out.println(ANSI_GREEN + "Read films from input file: " + input + ANSI_RESET);
     }
 
     private static List<String> readCSV(String line){
